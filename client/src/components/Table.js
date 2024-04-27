@@ -19,15 +19,14 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+import CategoryFilter from './Filter';
+import { useState } from 'react';
 
-function createData(id, name, calories, fat, carbs, protein) {
+
+function createData(id, category, amount, date, time, shop) {
   return {
     id,
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
+    category, amount, date, time, shop,
   };
 }
 
@@ -87,7 +86,7 @@ const headCells = [
     label: 'Category',
   },
   {
-    id: 'Amount',
+    id: 'amount',
     numeric: true,
     disablePadding: false,
     label: 'Amount(Rs)',
@@ -99,7 +98,7 @@ const headCells = [
     label: 'Date',
   },
   {
-    id: 'Time',
+    id: 'time',
     numeric: true,
     disablePadding: false,
     label: 'Time',
@@ -169,9 +168,23 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected ,onApplyFilter} = props;
+  //filter options
+  const [showFilter, setShowFilter] = useState(false);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
+  const handleFilterClick = () => {
+    setShowFilter(true);
+  };
+
+  const handleApplyFilter = (selectedCategories) => {
+    console.log('hi',selectedCategories)
+    setFilteredCategories(selectedCategories);
+    onApplyFilter(selectedCategories)
+
+  };
   return (
+    <>
     <Toolbar
       sx={{
         pl: { sm: 2 },
@@ -210,12 +223,18 @@ function EnhancedTableToolbar(props) {
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
-          <IconButton>
+          <IconButton onClick={handleFilterClick} >
             <FilterListIcon />
           </IconButton>
         </Tooltip>
       )}
     </Toolbar>
+    <CategoryFilter
+        show={showFilter}
+        onHide={() => setShowFilter(false)}
+        onApplyFilter={handleApplyFilter}
+      />
+    </>
   );
 }
 
@@ -229,6 +248,7 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -289,11 +309,13 @@ export default function EnhancedTable() {
       ),
     [order, orderBy, page, rowsPerPage],
   );
-
+    console.log(filteredCategories);
   return (
+    <>
+    
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} onApplyFilter = {(e)=>{setFilteredCategories(e)}}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -338,12 +360,12 @@ export default function EnhancedTable() {
                       scope="row"
                       padding="none"
                     >
-                      {row.name}
+                      {row.category}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell align="right">{row.amount}</TableCell>
+                    <TableCell align="right">{row.date}</TableCell>
+                    <TableCell align="right">{row.time}</TableCell>
+                    <TableCell align="right">{row.shop}</TableCell>
                   </TableRow>
                 );
               })}
@@ -367,5 +389,6 @@ export default function EnhancedTable() {
         />
       </Paper>
     </Box>
+    </>
   );
 }

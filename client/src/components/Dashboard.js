@@ -9,6 +9,7 @@ const ExpenseTracker = () => {
   const balance = 5240;
   const transactions = 1284;
   Chart.register(ArcElement);
+
   const expenseData = {
     labels: ['Fuel', 'Food', 'Shopping','Transport', 'Health Care', 'Utilities', 'Others'],
     datasets: [
@@ -42,7 +43,26 @@ const ExpenseTracker = () => {
 
   const doughnutOptions = {
     responsive: true,
-   heigth: '50%',
+    aspectRatio: 1,
+    plugins: {
+      legend: {
+        position: 'right',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed && context.parsed.toFixed) {
+              label += context.parsed.toFixed(2);
+            }
+            return label;
+          }
+        }
+      }
+    }
   };
 
   const lineOptions = {
@@ -61,7 +81,10 @@ const ExpenseTracker = () => {
 
   return (
     <Container>
-      <Row className="mb-4">
+      <Row className="mt-4">
+        {/* Income, Expenses, Balance, Transactions cards */}
+      </Row>
+      {/* <Row className="mb-4">
         <Col>
           <Card className="text-center">
             <Card.Body>
@@ -94,16 +117,18 @@ const ExpenseTracker = () => {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
       <Row>
   <Col md={6}>
-    <Card>
-      <Card.Body>
-        <Card.Title>Total Expenses</Card.Title>
-        <Doughnut data={expenseData} options={doughnutOptions} />
-        {/* Render expense category descriptions */}
-      </Card.Body>
-    </Card>
+  <Card>
+            <Card.Body>
+              <Card.Title>Total Expenses</Card.Title>
+              <div className="chart-container" style={{ width: '50%', margin: 'auto' }}>
+                <Doughnut data={expenseData} options={doughnutOptions} />
+              </div>
+              {/* Render expense category descriptions */}
+            </Card.Body>
+          </Card>
   </Col>
   <Col md={6}>
     <Card>

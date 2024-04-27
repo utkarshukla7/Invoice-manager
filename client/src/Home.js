@@ -5,8 +5,11 @@ import EnhancedTable from './components/Table';
 import ExpenseTracker from './components/Dashboard';
 import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { useAuth0 } from '@auth0/auth0-react';
+
 const Home = () => {
     const [modalShow, setModalShow] = useState(false);
+    const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
     const [uploadedImage, setUploadedImage] = useState(null);
     const [page, setPage] = useState(1);
     const [ExtractedText, setExtractedText] = useState(null);
@@ -80,6 +83,9 @@ const Home = () => {
           <button className="sidebar-button" onClick = {()=> setPage(3)}>About</button>
         </div>
         <button className="sidebar-button logout-button">Logout</button>
+        <button className="sidebar-button logout-button" onClick={() => loginWithRedirect()}>
+            Login
+          </button>
       </div>
       <div className='main'>
       {page === 1 && <ExpenseTracker></ExpenseTracker>}
