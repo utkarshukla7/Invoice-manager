@@ -6,7 +6,7 @@ import ExpenseTracker from './components/Dashboard';
 import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useAuth0 } from '@auth0/auth0-react';
-
+import First from './First';
 const Home = () => {
     const [modalShow, setModalShow] = useState(false);
     const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
@@ -22,6 +22,11 @@ const Home = () => {
       amount: '',
       shop: '',
     });
+    const handleLogout = () => {
+      logout({
+        returnTo: window.location.origin, // Specify the URL to redirect after logout
+      });
+    };
 
   const handleModify = () => {
     setIsEditable(true);
@@ -72,6 +77,10 @@ const Home = () => {
       }
     }
   return (
+    <>
+    
+    {!isAuthenticated && <First></First>}
+    {isAuthenticated &&
     <div className = 'window' style = {{
       display: 'flex'
     }}>
@@ -82,10 +91,8 @@ const Home = () => {
           <button className="sidebar-button" onClick = {()=> setPage(2)}>Transactions</button>
           <button className="sidebar-button" onClick = {()=> setPage(3)}>About</button>
         </div>
-        <button className="sidebar-button logout-button">Logout</button>
-        <button className="sidebar-button logout-button" onClick={() => loginWithRedirect()}>
-            Login
-          </button>
+        <button className="sidebar-button logout-button" onClick={handleLogout}>Logout</button>
+        
       </div>
       <div className='main'>
       {page === 1 && <ExpenseTracker></ExpenseTracker>}
@@ -172,6 +179,8 @@ const Home = () => {
     </Modal>}
       
     </div>
+}
+    </>
   );
 };
 
