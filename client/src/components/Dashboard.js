@@ -4,26 +4,23 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import { Doughnut, Line, Bar } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js/auto';
 import styles from './Dashboard.module.css';
-
+import { useEffect,useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
 const ExpenseTracker = () => {
-  // Sample data for charts and components
-  const totalExpenses = 38060;
-  const income = 43300;
-  const balance = 5240;
-  const transactions = 1284;
+
 
   Chart.register(ArcElement);
-
-  const expenseData = {
+  const {user} = useAuth0();
+  const [expenseData, setExpenseData] = useState({
     labels: ['Fuel', 'Food', 'Shopping', 'Transport', 'Health Care', 'Utilities', 'Others'],
     datasets: [
       {
-        data: [6120, 10300, 14000, 14700, 2375, 13275, 2275],
+        data: [0, 0, 0, 0, 0, 0, 0],
         backgroundColor: ['#e67e22', '#c0392b', '#f1c40f', '#9b59b6', '#2ecc71', '#e74c3c', '#3498db'],
       },
     ],
-  };
-
+  });
   const balanceData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
@@ -36,6 +33,45 @@ const ExpenseTracker = () => {
       },
     ],
   };
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const email = user.email;
+        const response = await axios.post('http://localhost:5000/getTransactions', {
+          email: email, // Replace with actual email
+        });
+        const transactions = response.data;
+        console.log(transactions)
+        const categoryMap = new Map();
+        transactions.forEach(transaction => {
+          let { category, amount } = transaction;
+          amount = parseInt(transaction.amount, 10);
+          if (categoryMap.has(category)) {
+            categoryMap.set(category, categoryMap.get(category) + amount);
+          } else {
+            categoryMap.set(category, amount);
+          }
+        });
+
+        const updatedExpenseData = {
+          labels: [...expenseData.labels],
+          datasets: [
+            {
+              data: expenseData.labels.map(label => categoryMap.get(label) || 0),
+              backgroundColor: expenseData.datasets[0].backgroundColor,
+            },
+          ],
+        };
+
+        setExpenseData(updatedExpenseData);
+        // console.log(updatedExpenseData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   const doughnutOptions = {
     responsive: true,

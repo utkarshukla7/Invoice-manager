@@ -41,45 +41,65 @@ const Home = () => {
   };
 
   const handleModalSubmit = () => {
-    setIsEditable(false);
+    const email = user.email; // Your email variable
+    const data = {
+      ...formValues,
+      email: email,
+    };
+
+    axios.post('http://localhost:5000/addTransaction', data)
+      .then((response) => {
+        // Show success toast
+        alert('Transaction added successfully');
+        setShowModal(false);
+      })
+      .catch((error) => {
+        // Show error toast
+        setShowModal(false);
+        console.error('There was an error adding the transaction:', error);
+      });
+      
   };
 
   const handleImageUpload = (e) => {
     setUploadedImage(e);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const formData = new FormData();
     formData.append('image', uploadedImage);
-
-    try {
-      const response = await axios.post('http://localhost:5000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+  
+    axios.post('http://localhost:5000/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((response) => {
+        console.log(response.data.text);
+        setExtractedText(response.data.text);
+      })
+      .then(() => {
+        const lines = ExtractedText.split('\n');
+        const category = lines.find((line) => line.startsWith('Category:'))?.split(':')[1].trim();
+        const date = lines.find((line) => line.startsWith('Date:'))?.split(':')[1].trim();
+        const time = lines.find((line) => line.startsWith('Time:'))?.split(':')[1].trim();
+        const shopName = lines.find((line) => line.startsWith('Name of shop:'))?.split(':')[1].trim();
+        const amount = lines.find((line) => line.startsWith('Total Amount:'))?.split(':')[1].trim();
+        console.log(category, date, time, shopName, amount);
+        setFormValues({
+          category: category || '',
+          date: date || '',
+          time: time || '',
+          amount: amount || '',
+          shop: shopName || '',
+        });
+        setShowModal(true);
+      })
+      .catch((error) => {
+        console.error('Error sending image:', error);
       });
-      console.log(response.data.text)
-      setExtractedText(response.data.text);
-      console.log(ExtractedText)
-      const lines = ExtractedText.split('\n');
-      const category = lines.find((line) => line.startsWith('Category:'))?.split(':')[1].trim();
-      const date = lines.find((line) => line.startsWith('Date:'))?.split(':')[1].trim();
-      const time = lines.find((line) => line.startsWith('Time:'))?.split(':')[1].trim();
-      const shopName = lines.find((line) => line.startsWith('Name of shop:'))?.split(':')[1].trim();
-      const amount = lines.find((line) => line.startsWith('Total Amount:'))?.split(':')[1].trim();
-      console.log(category, date, time, shopName, amount)
-      setFormValues({
-        category: category || '',
-        date: date || '',
-        time: time || '',
-        amount: amount || '',
-        shop: shopName || '',
-      });
-      setShowModal(true);
-    } catch (error) {
-      console.error('Error sending image:', error);
-    }
   }
+  
 
   return (
     <>

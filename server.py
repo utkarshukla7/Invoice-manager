@@ -6,9 +6,30 @@ import cv2
 import numpy as np
 import pytesseract
 import requests, json
+from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+
+
+USER = os.getenv("MONGO_USER")
+PASS = os.getenv("MONGO_PASS")
+API = os.getenv('API_KEY')
 
 app = Flask(__name__)
 CORS(app)
+
+
+
+mongo_uri = ''
+
+
+client = MongoClient(mongo_uri)
+
+database = 'Invoice-manager'
+db = client.database
 
 def extract_largest_contour(image):
     nparr = np.frombuffer(base64.b64decode(image), np.uint8)
@@ -44,8 +65,8 @@ def extract_largest_contour(image):
         return None
     
 def gemini(message):
-    gemini_api_key = ""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={gemini_api_key}"
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={API}"
 
 
     messages_to_send = [
@@ -109,6 +130,43 @@ def upload_image():
     else:
         return jsonify({'error': 'Failed to extract text from the image'}), 500
 
+@app.route('/addTransaction', methods=['POST'])
+def add_transaction():
+    try:
+        collection = db['user']
+        try:
+            data = request.get_json()
+            collection.insert_one(data)
+            return jsonify({'message': 'Transaction added successfully'}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
+@app.route('/getTransactions', methods=['POST'])
+def get_transactions():
+    try:
+
+        collection = db["user"]  
+
+        data = request.get_json()
+        email = data.get('email')
+        cursor = collection.find({'email': email})
+        transactions = []
+        for index, doc in enumerate(cursor):
+            transaction = {
+                'id': index,
+                'category': doc['category'],
+                'amount': doc['amount'],
+                'date': doc['date'],
+                'time': doc['time'],
+                'shop': doc['shop']
+            }
+            transactions.append(transaction)
+        print(transactions)
+        return jsonify(transactions)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 if __name__ == '__main__':
     app.run(debug=True)
