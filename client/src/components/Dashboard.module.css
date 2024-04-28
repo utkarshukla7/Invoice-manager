@@ -1,0 +1,12 @@
+/* Dashboard.module.css */
+.chart-container {
+    position: relative;
+    height: 10vh !important; /* Adjust this value to your desired height */
+  }
+  
+  .container {
+    background: #BDC3C7;
+    min-height: 100vh;
+    padding: 2rem;
+    color: #fff;
+  }

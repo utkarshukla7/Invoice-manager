@@ -1,0 +1,110 @@
+/* First.module.css */
+.container {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+    color: #fff;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+  }
+  
+  .appName {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .billText {
+    color: #e67e22;
+  }
+  
+  .easeText {
+    color: #fff;
+  }
+  
+  .authButtons {
+    display: flex;
+    align-items: center;
+  }
+  
+  .authButtons button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .loginButton {
+    background-color: #e67e22;
+    color: #fff;
+  }
+  
+  .loginButton:hover {
+    background-color: #d35400;
+  }
+  
+  .logoutButton {
+    background-color: #c0392b;
+    color: #fff;
+    margin-left: 1rem;
+  }
+  
+  .logoutButton:hover {
+    background-color: #e74c3c;
+  }
+  
+  .userGreeting {
+    margin-right: 1rem;
+    font-weight: bold;
+  }
+  
+  .main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .appNameHeading {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .tagline {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .getStartedButton {
+    padding: 0.8rem 1.5rem;
+    background-color: #e67e22;
+    color: #fff;
+    border: none;
+    border-radius: 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .getStartedButton:hover {
+    background-color: #d35400;
+  }
