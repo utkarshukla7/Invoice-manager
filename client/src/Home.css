@@ -1,47 +1,12 @@
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    width: 200px; 
-    background-color: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  
-  .button-container {
-    margin-top: 35vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .sidebar-button {
-    background-color: transparent;
-    border: none;
-    color: #333;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 10px;
-    width: 100%;
-    text-align: left;
-    transition: background-color 0.3s ease;
-  }
-  
-  .sidebar-button:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .logout-button {
-    margin-top: auto; /* Moves logout button to the bottom */
-  }
-  .main{
-    margin-left: 200px;
-    flex-direction: column;
-    flex-grow: 1;
-    height: 100vh;
-    margin-bottom: 0%;
-  }
+/* Home.css */
+.window {
+  display: flex;
+}
+
+.main {
+  margin-left: 200px;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100vh;
+  margin-bottom: 0%;
+}
