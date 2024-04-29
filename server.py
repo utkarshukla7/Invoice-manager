@@ -68,12 +68,39 @@ def gemini(message):
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={API}"
 
+     # Text to insert
+    text_to_insert = """
+    "You will be provided a text extracted from a invoice choose the category of the invoice from 7 categories whose description are given below, Don't add any kind of formatting in the response, don't bold the text.
+
+    1. Grocery:  Essential food and household items purchased for consumption at home.
+
+    2. Food: Meals or snacks consumed either at home or outside, including dining out, takeout, and home orders.
+
+    3. Transportation: Modes of travel including public transit, private vehicles, and ride-sharing services.
+
+    4. Healthcare: Services and products related to medical care, including doctor visits, prescriptions, insurance, and medicine purchases.
+
+    5. Entertainment: Activities and products for leisure and enjoyment, such as movies, concerts, gaming, and OTT platform subscriptions.
+
+    6. Utilities: Essential services like electricity, water, gas, tools required for house maintenance, and internet needed for daily living.
+
+    7. Others: Miscellaneous expenses that do not fit in the previously mentioned categories.
+
+    Extract the following information from the provided text in the format given below:
+    category:
+    date:
+    time:
+    name of shop:
+    total amount:
+    "
+    """
 
     messages_to_send = [
         {
             "role": "user",
             "parts": [{
-                "text": "You will be provided a text extracted from a invoice choose the category of the invoice from 7 categories Grocery, Food, Transportation, Healthcare, Entertainment, Utilities, Others and  extract date, time, name of shop, total amount skip which ever is does not exist in the text.Don't add any kind of formating in the reponse."
+                "text": text_to_insert
+                
             }],
         },
         {

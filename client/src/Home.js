@@ -77,21 +77,23 @@ const Home = () => {
       .then((response) => {
         console.log(response.data.text);
         setExtractedText(response.data.text);
+        return ExtractedText
       })
-      .then(() => {
-        const lines = ExtractedText.split('\n');
-        const category = lines.find((line) => line.startsWith('Category:'))?.split(':')[1].trim();
-        const date = lines.find((line) => line.startsWith('Date:'))?.split(':')[1].trim();
-        const time = lines.find((line) => line.startsWith('Time:'))?.split(':')[1].trim();
-        const shopName = lines.find((line) => line.startsWith('Name of shop:'))?.split(':')[1].trim();
-        const amount = lines.find((line) => line.startsWith('Total Amount:'))?.split(':')[1].trim();
+      .then((ExtractedText) => {
+        const lines = ExtractedText.split('\n').map(line => line.toLowerCase());
+        console.log(lines)
+        const category = lines.find((line) => line.startsWith('category:'))?.split(':')[1].trim();
+        const date = lines.find((line) => line.startsWith('date:'))?.split(':')[1].trim();
+        const time = lines.find((line) => line.startsWith('time:'))?.split(':')[1].trim();
+        const shopName = lines.find((line) => line.startsWith('name of shop:'))?.split(':')[1].trim();
+        const amount = lines.find((line) => line.startsWith('total amount:'))?.split(':')[1].trim();
         console.log(category, date, time, shopName, amount);
         setFormValues({
-          category: category || '',
-          date: date || '',
-          time: time || '',
-          amount: amount || '',
-          shop: shopName || '',
+          category: category?.charAt(0).toUpperCase() + category?.slice(1) || '',
+          date: date?.charAt(0).toUpperCase() + date?.slice(1) || '',
+          time: time?.charAt(0).toUpperCase() + time?.slice(1) || '',
+          amount: amount?.charAt(0).toUpperCase() + amount?.slice(1) || '',
+          shop: shopName?.charAt(0).toUpperCase() + shopName?.slice(1) || '',
         });
         setShowModal(true);
       })
