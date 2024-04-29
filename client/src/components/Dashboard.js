@@ -45,8 +45,10 @@ const ExpenseTracker = () => {
         const categoryMap = new Map();
         transactions.forEach(transaction => {
           let { category, amount } = transaction;
-          amount = parseInt(transaction.amount, 10);
+          amount = parseInt(transaction.amount, 10) || 0;
+          // console.log(category, amount)
           if (categoryMap.has(category)) {
+            // console.log(category,categoryMap.get(category) + amount)
             categoryMap.set(category, categoryMap.get(category) + amount);
           } else {
             categoryMap.set(category, amount);
@@ -64,7 +66,8 @@ const ExpenseTracker = () => {
         };
 
         setExpenseData(updatedExpenseData);
-        // console.log(updatedExpenseData);
+        // console.log(categoryMap)
+        console.log(updatedExpenseData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
