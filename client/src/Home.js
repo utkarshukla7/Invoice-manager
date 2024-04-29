@@ -64,7 +64,9 @@ const Home = () => {
   const handleImageUpload = (e) => {
     setUploadedImage(e);
   };
-
+  function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append('image', uploadedImage);
@@ -77,10 +79,11 @@ const Home = () => {
       .then((response) => {
         console.log(response.data.text);
         setExtractedText(response.data.text);
-        return ExtractedText
+        // await wait(5000);
+        return response
       })
-      .then((ExtractedText) => {
-        const lines = ExtractedText.split('\n').map(line => line.toLowerCase());
+      .then((response) => {
+        const lines = response.data.text.split('\n').map(line => line.toLowerCase());
         console.log(lines)
         const category = lines.find((line) => line.startsWith('category:'))?.split(':')[1].trim();
         const date = lines.find((line) => line.startsWith('date:'))?.split(':')[1].trim();
