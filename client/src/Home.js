@@ -9,6 +9,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import First from './First';
 import styles from './Home.module.css';
 import About from './About';
+import LoadingOverlay from './loadingOverlay';
 
 const Home = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -18,6 +19,7 @@ const Home = () => {
   const [ExtractedText, setExtractedText] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     category: '',
     date: '',
@@ -68,6 +70,7 @@ const Home = () => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
   const handleSubmit = () => {
+    setIsLoading(true);
     const formData = new FormData();
     formData.append('image', uploadedImage);
   
@@ -77,6 +80,10 @@ const Home = () => {
       }
     })
       .then((response) => {
+        if(response.data.success === false) {
+          alert(response.data.text);
+          return;
+        }
         console.log(response.data.text);
         setExtractedText(response.data.text);
         // await wait(5000);
@@ -102,6 +109,8 @@ const Home = () => {
       })
       .catch((error) => {
         console.error('Error sending image:', error);
+      }).finally(() => {
+        setIsLoading(false); 
       });
   }
   
@@ -157,8 +166,7 @@ const Home = () => {
             show={modalShow}
             onHide={() => setModalShow(false)}
             onImageUpload={handleImageUpload}
-            onSubmit={handleSubmit}
-            />
+            onSubmit={handleSubmit}/>
           {<Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
               <Modal.Title>File Details</Modal.Title>
@@ -231,6 +239,7 @@ const Home = () => {
               )}
             </Modal.Footer>
           </Modal>}
+          <LoadingOverlay isLoading={isLoading} />
         </div>
       }
     </>
