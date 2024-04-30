@@ -68,7 +68,6 @@ def gemini(message):
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={API}"
 
-     # Text to insert
     text_to_insert = """
     "You will be provided a text extracted from a invoice choose the category of the invoice from 7 categories whose description are given below, Don't add any kind of formatting in the response, don't bold the text.
 
@@ -135,10 +134,39 @@ def get_text(image):
     cropped_image = extract_largest_contour(image)
     if cropped_image is not None:
         text = pytesseract.image_to_string(cropped_image)
+        print(text)
         if text:
             return gemini(text)
     else:
         return None
+
+def is_blurry(image, threshold=3000):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    lap_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+    return lap_var < threshold
+
+def has_low_contrast(image, threshold=50):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+    std_dev = hist.std()
+    return std_dev < threshold
+
+def has_noise(image, threshold=3000):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    lap_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+    return lap_var < threshold
+
+def is_too_dark(image, threshold=100):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+    dark_pixel_percentage = sum(hist[:threshold]) / sum(hist)
+    return dark_pixel_percentage > 0.5
+
+def is_too_bright(image, threshold=200):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+    bright_pixel_percentage = sum(hist[threshold:]) / sum(hist)
+    return bright_pixel_percentage > 0.5
 
 @app.route('/upload', methods=['POST'])
 def upload_image():
@@ -151,7 +179,22 @@ def upload_image():
     image_binary = file.read()
     image_base64 = base64.b64encode(image_binary).decode('utf-8')
     text = get_text(image_base64)
-    print(text)
+    if text:
+        return jsonify({'success': True, 'text': text}), 200
+    else:
+        return jsonify({'error': 'Failed to extract text from the image'}), 500
+    
+    image_array = cv2.imdecode(np.frombuffer(image_binary, np.uint8), cv2.IMREAD_COLOR) 
+    if is_blurry(image_array):
+        return jsonify({'success': False, 'text': 'Image is Blurry. Please re-upload a clear image.'}), 200
+    if has_noise(image_array):
+        return jsonify({'success': False, 'text': 'Image has Noise. Please re-upload a clearer image.'}), 200
+    if is_too_dark(image_array):
+        return jsonify({'success': False, 'text': 'Image is too dark. Please re-upload a brighter image.'}), 200
+    if is_too_bright(image_array):
+        return jsonify({'success': False, 'text': 'Image is too bright. Please re-upload a darker image.'}), 200
+
+    text = get_text(image_base64)
     if text:
         return jsonify({'success': True, 'text': text}), 200
     else:
@@ -197,3 +240,4 @@ def get_transactions():
         return jsonify({'error': str(e)}), 500
 if __name__ == '__main__':
     app.run(debug=True)
+    
