@@ -23,7 +23,7 @@ CORS(app)
 
 
 
-mongo_uri = 'mongodb+srv://shuklautkarsh7007:TD2vgmeIIAxKy5tl@ecommerce.pt0obmo.mongodb.net/'
+mongo_uri = ''
 
 
 client = MongoClient(mongo_uri)
